@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "rComments - Reddit Hover Comments",
+  "version": "1.4.0",
+  "description": "Hover over comments link to view all comments and their replies.",
+  "homepage_url": "https://iampueroo.github.io/rComments/",
+  "icons": {
+    "64": "icons/icon-64.png",
+    "128": "icons/icon-128.png",
+    "600": "icons/icon-600.png"
+  },
+  "content_scripts": [
+    {
+      "js": ["rComments.js"],
+      "css": ["rComments.css"],
+      "matches": [
+        "http://reddit.com/*",
+        "https://reddit.com/*",
+        "http://*.reddit.com/*",
+        "https://*.reddit.com/*"
+      ]
+    }
+  ],
+  "host_permissions": [
+    "http://reddit.com/*",
+    "https://reddit.com/*",
+    "http://*.reddit.com/*",
+    "https://*.reddit.com/*"
+  ]
+}

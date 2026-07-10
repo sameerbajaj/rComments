@@ -1,0 +1,348 @@
+/* Design system using CSS variables for theme support */
+._rcomment_div {
+    /* Light Mode Tokens */
+    --rcomments-bg-main: #ffffff;
+    --rcomments-bg-comment: #fafafa;
+    --rcomments-bg-comment-odd: #f3f4f6;
+    --rcomments-border-main: rgba(0, 0, 0, 0.12);
+    --rcomments-border-comment: rgba(0, 0, 0, 0.06);
+    --rcomments-text-main: #222222;
+    --rcomments-text-muted: #57606a;
+    --rcomments-text-score: #787c7e;
+    --rcomments-bg-hover: #eaeef2;
+    --rcomments-bg-btn: #f6f8fa;
+    --rcomments-border-btn: rgba(0, 0, 0, 0.06);
+    --rcomments-quote-border: #c5c1c1;
+    --rcomments-quote-text: #57606a;
+    --rcomments-code-bg: #f6f7f8;
+    --rcomments-scrollbar-thumb: rgba(0, 0, 0, 0.15);
+    --rcomments-scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
+    --rcomments-shadow: 0 12px 28px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.08);
+
+    position: absolute;
+    background-color: var(--rcomments-bg-main);
+    color: var(--rcomments-text-main);
+    max-width: 600px;
+    max-height: 550px;
+    overflow-y: auto;
+    padding: 0;
+    border: 1px solid var(--rcomments-border-main);
+    border-radius: 12px;
+    z-index: 10200000;
+    box-shadow: var(--rcomments-shadow);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    scrollbar-width: thin;
+}
+
+/* Explicit class-based dark overrides for RES nightmode, Reddit dark themes, and extension overrides */
+.res-nightmode ._rcomment_div,
+.res-nightmode._rcomment_div,
+.theme-dark ._rcomment_div,
+[theme="dark"] ._rcomment_div,
+html[theme="dark"] ._rcomment_div,
+html.theme-dark ._rcomment_div,
+._rcomments_dark ._rcomment_div,
+._rcomments_dark._rcomment_div {
+    --rcomments-bg-main: #1a1a1a;
+    --rcomments-bg-comment: #262626;
+    --rcomments-bg-comment-odd: #1f1f1f;
+    --rcomments-border-main: rgba(255, 255, 255, 0.1);
+    --rcomments-border-comment: rgba(255, 255, 255, 0.05);
+    --rcomments-text-main: #e2e2e2;
+    --rcomments-text-muted: #a0a0a0;
+    --rcomments-text-score: #818384;
+    --rcomments-bg-hover: #2b2b2b;
+    --rcomments-bg-btn: #202020;
+    --rcomments-border-btn: rgba(255, 255, 255, 0.05);
+    --rcomments-quote-border: #4e5254;
+    --rcomments-quote-text: #818384;
+    --rcomments-code-bg: #272729;
+    --rcomments-scrollbar-thumb: rgba(255, 255, 255, 0.2);
+    --rcomments-scrollbar-thumb-hover: rgba(255, 255, 255, 0.4);
+    --rcomments-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Force colors on children to override any inherited light-mode colors from Reddit's stylesheet */
+._rcomments_body_html,
+._rcomments_body_html p,
+._rcomments_body_html span,
+._rcomments_body_html li,
+._rcomments_body_html div,
+._rcomments_body_html strong,
+._rcomments_body_html em {
+    color: var(--rcomments-text-main) !important;
+}
+
+._rcomments_body_html a {
+    color: #0079d3 !important;
+}
+
+/* Custom scrollbar styling */
+._rcomment_div::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+._rcomment_div::-webkit-scrollbar-track {
+    background: transparent;
+}
+._rcomment_div::-webkit-scrollbar-thumb {
+    background: var(--rcomments-scrollbar-thumb);
+    border-radius: 4px;
+}
+._rcomment_div::-webkit-scrollbar-thumb:hover {
+    background: var(--rcomments-scrollbar-thumb-hover);
+}
+
+/* Smooth fade-in & scale-up animation */
+@keyframes rCommentsFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+._rcomment_div[style*="display: block"] {
+    animation: rCommentsFadeIn 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Individual comment box */
+._rcomments_comment {
+    border: 1px solid var(--rcomments-border-comment);
+    border-radius: 8px;
+    margin: 8px 12px 8px 12px;
+    padding: 10px 12px;
+    background-color: var(--rcomments-bg-comment);
+    color: var(--rcomments-text-main);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Zebra striping for readability */
+._rcomments_comment_odd > ._rcomments_comment {
+    background-color: var(--rcomments-bg-comment-odd);
+}
+
+/* Indented nested comment replies styling */
+._rcomments_comment .children {
+    margin-left: 18px;
+    border-left: 2px solid var(--rcomments-border-comment);
+    padding-left: 12px;
+    margin-top: 6px;
+}
+
+/* Up/down voting arrows style */
+._rcomments_arrows {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20px;
+    float: left;
+    margin-right: 10px;
+    gap: 4px;
+    margin-top: 2px;
+}
+._rcomments_arrows .arrow {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.55;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+}
+._rcomments_arrows .arrow:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+._rcomments_arrows .arrow.up {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23878a8c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>');
+}
+._rcomments_arrows .arrow.down {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23878a8c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+}
+._rcomments_arrows .arrow.upmod {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ff4500" stroke="%23ff4500" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>');
+    opacity: 1;
+}
+._rcomments_arrows .arrow.downmod {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%237193ff" stroke="%237193ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+    opacity: 1;
+}
+
+/* Loading & error states */
+._rcomments_loading {
+    padding: 16px;
+    text-align: center;
+    color: var(--rcomments-text-muted);
+    font-size: 13px;
+}
+._rcomments_error {
+    padding: 12px;
+    color: #cf222e;
+    background-color: #ffebe9;
+    border-radius: 6px;
+    margin: 8px;
+    font-size: 13px;
+}
+
+/* Navigation buttons (Next comment / next reply) */
+._rcomments_next_comment,
+._rcomments_next_reply {
+    cursor: pointer;
+    font-weight: 600;
+}
+._rcomments_next_reply,
+._rcomments_no_reply {
+    padding-top: 6px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: #0079d3;
+}
+._rcomments_next_reply:hover {
+    text-decoration: underline;
+}
+
+/* Bottom banner for loading next comments */
+._rcomments_next_comment,
+._rcomments_next_comment_none {
+    text-align: center;
+    padding: 10px;
+    font-size: 13px;
+    border-top: 1px solid var(--rcomments-border-comment);
+    background-color: var(--rcomments-bg-btn);
+    color: var(--rcomments-text-main);
+    transition: background-color 0.2s ease;
+}
+._rcomments_next_comment:hover {
+    background-color: var(--rcomments-bg-hover);
+}
+._rcomments_next_comment_none,
+._rcomments_no_reply {
+    color: var(--rcomments-text-muted);
+}
+
+/* Other alignments */
+._rcomments_content {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+._rcomments_awards {
+    margin-left: 6px;
+}
+._rcomments_awarding-count {
+    color: var(--rcomments-text-muted);
+    position: relative;
+    bottom: 3px;
+    left: -2px;
+    font-size: 11px;
+}
+._rcomments_hidden {
+    display: none;
+}
+
+/* New Reddit specific styles overrides */
+._rcomments_new_reddit_styles ._rcomment_div,
+._rcomments_new_reddit_styles ._rcomments_comment {
+    font-family: "Noto Sans", sans-serif;
+    font-size: 14px;
+}
+._rcomments_new_reddit_styles ._rcomments_tagline {
+    display: flex;
+    align-items: center;
+    line-height: 16px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--rcomments-text-muted);
+}
+._rcomments_new_reddit_styles ._rcomments_author {
+    color: #0079d3;
+    font-weight: 600;
+    text-decoration: none;
+}
+._rcomments_new_reddit_styles ._rcomments_author:hover {
+    text-decoration: underline;
+}
+._rcomments_new_reddit_styles ._rcomments_mod {
+    color: #22c55e;
+    font-weight: 700;
+    margin-left: 4px;
+}
+._rcomments_new_reddit_styles ._rcomments_stickied {
+    color: #22c55e;
+    font-weight: 600;
+}
+._rcomments_new_reddit_styles ._rcomments_score {
+    color: var(--rcomments-text-score);
+    padding-left: 8px;
+}
+._rcomments_new_reddit_styles ._rcomments_next_reply,
+._rcomments_no_reply {
+    font-size: 11px;
+}
+._rcomments_new_reddit_styles ._rcomments_loading {
+    color: var(--rcomments-text-score);
+}
+._rcomments_new_reddit_styles ._rcomments_body_html {
+    line-height: 1.5;
+    color: var(--rcomments-text-main);
+}
+._rcomments_new_reddit_styles ._rcomments_body_html ol,
+._rcomments_new_reddit_styles ._rcomments_body_html p:not(:last-child),
+._rcomments_new_reddit_styles ._rcomments_body_html ul {
+    margin-bottom: 0.6em;
+}
+._rcomments_new_reddit_styles ._rcomments_body_html h1,
+._rcomments_new_reddit_styles ._rcomments_body_html h2,
+._rcomments_new_reddit_styles ._rcomments_body_html h3,
+._rcomments_new_reddit_styles ._rcomments_body_html h4,
+._rcomments_new_reddit_styles ._rcomments_body_html h5 {
+    margin-bottom: 8px;
+    margin-top: 1.4em;
+    line-height: 24px;
+}
+._rcomments_new_reddit_styles ._rcomments_body_html h1 { font-size: 20px; line-height: 24px; }
+._rcomments_new_reddit_styles ._rcomments_body_html h2 { font-size: 18px; line-height: 22px; }
+._rcomments_new_reddit_styles ._rcomments_body_html h3 { font-size: 16px; line-height: 20px; }
+._rcomments_new_reddit_styles ._rcomments_body_html a {
+    color: #0079d3;
+    text-decoration: none;
+}
+._rcomments_new_reddit_styles ._rcomments_body_html a:hover {
+    text-decoration: underline;
+}
+._rcomments_new_reddit_styles ._rcomments_body_html ul {
+    list-style: disc outside;
+    margin-left: 20px;
+}
+._rcomments_new_reddit_styles ._rcomments_body_html ol {
+    list-style: decimal outside;
+    margin-left: 20px;
+}
+._rcomments_new_reddit_styles ._rcomments_body_html td,
+._rcomments_new_reddit_styles ._rcomments_body_html th {
+    padding: 6px 10px;
+    border: 1px solid var(--rcomments-border-comment);
+}
+._rcomments_new_reddit_styles ._rcomments_body_html code {
+    background-color: var(--rcomments-code-bg);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+}
+._rcomments_new_reddit_styles ._rcomments_body_html pre {
+    background-color: var(--rcomments-code-bg);
+    padding: 8px 12px;
+    border: 1px solid var(--rcomments-border-comment);
+    border-radius: 6px;
+    overflow-x: auto;
+}
+._rcomments_new_reddit_styles ._rcomments_body_html blockquote {
+    border-left: 4px solid var(--rcomments-quote-border) !important;
+    margin: 6px 0 6px 8px;
+    padding-left: 10px;
+    color: var(--rcomments-quote-text) !important;
+}
