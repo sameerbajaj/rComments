@@ -134,6 +134,62 @@
             return div;
         },
 
+        positionPopup(anchor) {
+            const popup = this.el;
+            if (!popup) return;
+
+            // Measure popup height/width by showing it invisibly first
+            const prevDisplay = popup.style.display;
+            const prevVisibility = popup.style.visibility;
+            popup.style.visibility = "hidden";
+            popup.style.display = "block";
+            popup.style.maxHeight = "550px"; // Reset to default to measure
+
+            const popupHeight = popup.offsetHeight;
+            const popupWidth = popup.offsetWidth;
+
+            popup.style.display = prevDisplay;
+            popup.style.visibility = prevVisibility;
+
+            const rect = anchor.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+
+            const spaceBelow = viewportHeight - rect.bottom;
+            const spaceAbove = rect.top;
+
+            let showAbove = false;
+            // If space below is limited and there is more space above, display above
+            if (spaceBelow < 300 && spaceAbove > spaceBelow) {
+                showAbove = true;
+            }
+
+            // Cap the height based on viewport bounds so it never forces page scrollbars
+            const maxAvailableHeight = showAbove ? (spaceAbove - 16) : (spaceBelow - 16);
+            const finalMaxHeight = Math.max(150, Math.min(550, maxAvailableHeight));
+            popup.style.maxHeight = finalMaxHeight + "px";
+
+            const scrollTop = window.scrollY || window.pageYOffset || 0;
+            const scrollLeft = window.scrollX || window.pageXOffset || 0;
+
+            let top = showAbove 
+                ? (scrollTop + rect.top - popupHeight - 8)
+                : (scrollTop + rect.bottom + 8);
+            
+            // Boundary checks
+            if (showAbove && top < scrollTop + 8) {
+                top = scrollTop + 8;
+            }
+
+            let left = scrollLeft + rect.left;
+            if (rect.left + popupWidth > viewportWidth - 16) {
+                left = scrollLeft + Math.max(16, viewportWidth - popupWidth - 16);
+            }
+
+            popup.style.top = top + "px";
+            popup.style.left = left + "px";
+        },
+
         show(anchor, contentHtml) {
             const popup = this.create();
             popup.innerHTML = `<div class="_rcomments_content">${contentHtml}</div>`;
@@ -142,13 +198,7 @@
             popup.classList.toggle("res-nightmode", state.prefersNightmode);
             popup.classList.toggle("_rcomments_dark", state.prefersNightmode);
 
-            // Position popup below the anchor
-            const rect = anchor.getBoundingClientRect();
-            const top = window.pageYOffset + rect.bottom;
-            const left = window.pageXOffset + rect.left;
-
-            popup.style.top = top + "px";
-            popup.style.left = left + "px";
+            this.positionPopup(anchor);
             popup.style.display = "block";
         },
 
@@ -162,7 +212,7 @@
             this.cancelHide();
             this.hideTimeout = setTimeout(() => {
                 this.hide();
-            }, 600);
+            }, 250); // Reduced delay from 600ms to 250ms for more responsive feel
         },
 
         cancelHide() {
@@ -180,9 +230,7 @@
             popup.classList.toggle("res-nightmode", state.prefersNightmode);
             popup.classList.toggle("_rcomments_dark", state.prefersNightmode);
 
-            const rect = anchor.getBoundingClientRect();
-            popup.style.top = (window.pageYOffset + rect.bottom) + "px";
-            popup.style.left = (window.pageXOffset + rect.left) + "px";
+            this.positionPopup(anchor);
             popup.style.display = "block";
         },
 
@@ -194,9 +242,7 @@
             popup.classList.toggle("res-nightmode", state.prefersNightmode);
             popup.classList.toggle("_rcomments_dark", state.prefersNightmode);
 
-            const rect = anchor.getBoundingClientRect();
-            popup.style.top = (window.pageYOffset + rect.bottom) + "px";
-            popup.style.left = (window.pageXOffset + rect.left) + "px";
+            this.positionPopup(anchor);
             popup.style.display = "block";
         },
 
@@ -511,6 +557,22 @@
                 popupManager.hide();
             }
         });
+
+        // Global click listener to close on click outside
+        document.addEventListener("click", (e) => {
+            if (popupManager.el && popupManager.el.style.display !== "none") {
+                const insidePopup = e.target.closest("._rcomment_div");
+                const commentsLink = findCommentsLink(e.target);
+                if (!insidePopup && !commentsLink) {
+                    popupManager.hide();
+                }
+            }
+        });
+
+        // Close instantly on page scroll
+        window.addEventListener("scroll", () => {
+            popupManager.hide();
+        }, { passive: true });
     }
 
     // Kick off initialization
